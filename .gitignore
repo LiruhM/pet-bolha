@@ -1,0 +1,30 @@
+# Build artifacts
+target/
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Android
+pet-android/build/
+pet-android/.gradle/
+pet-android/local.properties
+pet-android/captures/
+*.apk
+*.aab
+*.ap_
+
+# Windows
+pet-windows/target/
+
+# Rust
+**/*.rs.bk
