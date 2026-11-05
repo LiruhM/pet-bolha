@@ -69,7 +69,7 @@ pub enum MemoryKind {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum SleepEventKind {
     FellAsleep,
     WokeUp,

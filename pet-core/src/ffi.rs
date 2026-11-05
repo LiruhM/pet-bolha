@@ -4,9 +4,9 @@
 //! O core roda em Rust, o overlay chama estas funções.
 
 use std::ffi::{CStr, CString};
-use std::os::raw::{c_char, c_float, c_int, c_uint, c_void};
-use std::ptr;
-use crate::state::{PetState, Needs, Mood, UserAction, PetAction, Temperament};
+use std::os::raw::{c_char, c_float, c_int};
+use chrono::Timelike;
+use crate::state::{PetState, Mood, UserAction};
 use crate::neural::{NeuralEngine, SensorInput, NetworkConfig};
 use crate::memory::MemoryStore;
 use crate::speech::SpeechEngine;
@@ -81,24 +81,24 @@ pub extern "C" fn pet_tick(handle: *mut PetHandle, dt_secs: c_float) {
     handle.state.tick(dt_secs);
     
     // Neural tick se habilitado
-    if let (Some(neural), Some(memory)) = (&mut handle.neural, &handle.memory) {
-        let sensors = SensorInput {
-            cursor_x: 0.5, // Atualizado pelo overlay via pet_set_cursor
-            cursor_y: 0.5,
-            active_window_hash: 0.0,
-            idle_seconds: handle.state.idle_since
-                .map(|t| (chrono::Utc::now() - t).num_seconds() as f32)
-                .unwrap_or(0.0),
-            time_of_day: (chrono::Utc::now().hour() as f32) / 24.0,
-            battery_level: 1.0, // Atualizado pelo overlay
-            screen_on: true,
-            recent_interaction: 0.0,
-        };
-        
-        let output = neural.tick(sensors, &handle.state.needs);
-        // TODO: usar output para modular comportamento
-        let _ = output;
-    }
+        if let Some(neural) = &mut handle.neural {
+            let sensors = SensorInput {
+                cursor_x: 0.5, // Atualizado pelo overlay via pet_set_cursor
+                cursor_y: 0.5,
+                active_window_hash: 0.0,
+                idle_seconds: handle.state.idle_since
+                    .map(|t| (chrono::Utc::now() - t).num_seconds() as f32)
+                    .unwrap_or(0.0),
+                time_of_day: (chrono::Utc::now().hour() as f32) / 24.0,
+                battery_level: 1.0, // Atualizado pelo overlay
+                screen_on: true,
+                recent_interaction: 0.0,
+            };
+
+            let output = neural.tick(sensors, &handle.state.needs);
+            // TODO: usar output para modular comportamento
+            let _ = output;
+        }
     
     // Fala automática
     if handle.config.speech_enabled {
@@ -308,19 +308,19 @@ pub extern "C" fn pet_should_render(handle: *mut PetHandle) -> c_int {
 pub extern "C" fn pet_get_animation(handle: *mut PetHandle, out_name: *mut *mut c_char) -> c_int {
     if handle.is_null() || out_name.is_null() { return -1; }
     let handle = unsafe { &*handle };
-    
+
     let action = crate::state::PetAction::decide(&handle.state);
     let anim = match action {
         crate::state::PetAction::Sleep => "sleep",
         crate::state::PetAction::Wander => "walk",
-        crate::state::PetAction::Play => "play",
+        crate::state::PetAction::RequestPlay => "play",
         crate::state::PetAction::Protest => "angry",
         crate::state::PetAction::RequestPet | crate::state::PetAction::Think => "think",
         crate::state::PetAction::Celebrate => "happy",
         crate::state::PetAction::Hide => "sad",
         _ => "idle",
     };
-    
+
     let c_str = CString::new(anim).unwrap();
     unsafe { *out_name = c_str.into_raw(); }
     0

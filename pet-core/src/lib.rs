@@ -18,8 +18,8 @@ pub mod speech;
 pub mod personality;
 pub mod ffi;
 
-pub use state::{PetState, Need, Mood, PetAction};
+pub use state::{PetState, Need, Mood, PetAction, Temperament};
 pub use neural::LifNetwork;
 pub use memory::{MemoryStore, MemoryEntry};
 pub use speech::{SpeechEngine, SpeechTemplate};
-pub use personality::{Personality, Temperament};
+pub use personality::{Personality, PetConfig};

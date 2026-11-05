@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Pet Bolha</string>
+    <string name="service_notification_title">Pet Bolha</string>
+    <string name="service_notification_text">Seu pet está ativo na tela</string>
+</resources>

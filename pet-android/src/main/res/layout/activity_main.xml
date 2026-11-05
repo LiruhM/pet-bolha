@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="top">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nome do Pet:"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/etPetName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Bolha"
+        android:inputType="textCapWords"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Personalidade:"
+        android:layout_marginBottom="4dp" />
+
+    <RadioGroup
+        android:id="@+id/rgPersonality"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rbBalanced"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bolha (Equilibrado)"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rbBryan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bryan (Revoltado)" />
+
+        <RadioButton
+            android:id="@+id/rbJorge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jorge (Coach)" />
+    </RadioGroup>
+
+    <Switch
+        android:id="@+id/swSpeech"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fala Automática"
+        android:checked="true"
+        android:layout_marginBottom="8dp" />
+
+    <Switch
+        android:id="@+id/swNeural"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rede Neural (LIF)"
+        android:checked="true"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="8dp">
+
+        <Button
+            android:id="@+id/btnFeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alimentar 🍖"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnSleep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dormir 💤" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnGetState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ver Estado"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Salvar Config" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dicas:"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Toque no pet = carinho\n• Arraste = mover\n• Toque longo = brincar\n• Acelerômetro move o cursor\n• Proximidade = carinho automático"
+        android:textSize="14sp"
+        android:lineSpacingExtra="4dp" />
+
+</LinearLayout>

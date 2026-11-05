@@ -1,0 +1,37 @@
+[package]
+name = "pet-android"
+version = "0.1.0"
+edition = "2021"
+description = "Android wrapper for Pet Bolha (built via Gradle)"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/LiruhM/pet-bolha"
+categories = ["mobile", "android"]
+keywords = ["pet", "companion", "android", "ffi"]
+
+# This is a placeholder - actual Android build is via Gradle
+# The Rust code is compiled via cargo + NDK and linked in Gradle
+
+[lib]
+name = "pet_android"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+anyhow = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+chrono = { workspace = true, features = ["serde"] }
+uuid = { workspace = true, features = ["serde", "v4"] }
+dirs = { workspace = true }
+parking_lot = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Neural engine (LIF - Leaky Integrate-and-Fire)
+nalgebra = { version = "0.32", features = ["serde"] }
+rand = "0.8"
+rand_distr = "0.4"
+rand_chacha = "0.3"
+directories = "5.0"
+
+# Re-export pet-core
+pet-core = { path = "../pet-core" }

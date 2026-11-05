@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use chrono::{DateTime, Utc, Duration};
+use chrono::{DateTime, Utc, Duration, Timelike};
 use uuid::Uuid;
 
 /// Necessidades básicas do pet (0.0 a 1.0, onde 1.0 = satisfeito)
@@ -155,7 +155,7 @@ impl Mood {
 }
 
 /// Temperamento base (personalidade)
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Temperament {
     pub base_decay: NeedDecayRate,
     pub mood_sensitivity: f32,      // Quão rápido muda de humor
@@ -258,12 +258,12 @@ pub struct PetState {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PetStats {
-    total_pets: u64,
-    total_plays: u64,
-    total_feeds: u64,
-    total_sleeps: u64,
-    words_spoken: u64,
-    days_alive: u32,
+    pub total_pets: u64,
+    pub total_plays: u64,
+    pub total_feeds: u64,
+    pub total_sleeps: u64,
+    pub words_spoken: u64,
+    pub days_alive: u32,
 }
 
 impl PetState {
@@ -335,7 +335,7 @@ impl PetState {
     /// Verifica se deve falar agora (baseado em chattiness + mood + tempo)
     pub fn should_speak(&self, min_interval_secs: f32) -> bool {
         let since_last = Utc::now().signed_duration_since(self.last_interaction);
-        if since_last.num_seconds() as f32 < min_interval_secs {
+        if (since_last.num_seconds() as f32) < min_interval_secs {
             return false;
         }
         

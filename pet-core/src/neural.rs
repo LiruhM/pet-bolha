@@ -13,13 +13,37 @@
 //! - Roda em thread separada, só acorda quando pet está "acordado"
 
 use nalgebra::{DMatrix, DVector};
-use rand::{Rng, SeedableRng};
+use rand::{Rng, RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use parking_lot::RwLock;
 use crate::state::{Needs, Mood, Temperament};
+
+// Helper para serialização de DMatrix
+mod matrix_serde {
+    use nalgebra::{DMatrix, Dyn, VecStorage};
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    pub fn serialize<S>(matrix: &DMatrix<f32>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let rows = matrix.nrows();
+        let cols = matrix.ncols();
+        let data: Vec<f32> = matrix.iter().cloned().collect();
+        (rows, cols, data).serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<DMatrix<f32>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let (rows, cols, data): (usize, usize, Vec<f32>) = Deserialize::deserialize(deserializer)?;
+        Ok(DMatrix::from_vec(rows, cols, data))
+    }
+}
 
 /// Configuração da rede neural
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -113,7 +137,7 @@ impl LifNetwork {
     fn xavier_matrix(rows: usize, cols: usize, rng: &mut ChaCha8Rng) -> DMatrix<f32> {
         let scale = (2.0 / (rows + cols) as f32).sqrt();
         DMatrix::from_fn(rows, cols, |_, _| {
-            rng.random_range(-scale..scale)
+            rng.gen_range(-scale..scale)
         })
     }
 
@@ -123,8 +147,8 @@ impl LifNetwork {
         let scale = (1.0 / n as f32).sqrt();
         for i in 0..n {
             for j in 0..n {
-                if i != j && rng.random::<f32>() < density {
-                    mat[(i, j)] = rng.random_range(-scale..scale);
+                if i != j && rng.gen::<f32>() < density {
+                    mat[(i, j)] = rng.gen_range(-scale..scale);
                 }
             }
         }
@@ -361,8 +385,11 @@ pub struct NetworkOutput {
 /// Pesos serializáveis
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NetworkWeights {
+    #[serde(with = "matrix_serde")]
     pub w_input_hidden: DMatrix<f32>,
+    #[serde(with = "matrix_serde")]
     pub w_hidden_hidden: DMatrix<f32>,
+    #[serde(with = "matrix_serde")]
     pub w_hidden_output: DMatrix<f32>,
     pub config: NetworkConfig,
 }
