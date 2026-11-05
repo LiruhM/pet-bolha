@@ -1,0 +1,22 @@
+[package]
+name = "pet-windows"
+version = "0.1.0"
+edition = "2021"
+description = "Windows overlay for Pet Bolha - transparent click-through window with tiny-skia rendering"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/matheus/pet-bolha"
+
+[dependencies]
+pet-core = { path = "../pet-core" }
+tiny-skia = { workspace = true }
+windows = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+dirs = { workspace = true }
+parking_lot = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+image = "0.24"
+bytemuck = "1.0"
