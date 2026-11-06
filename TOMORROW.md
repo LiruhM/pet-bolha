@@ -4,95 +4,35 @@
 
 ---
 
-## ✅ COMPLETADO NESTA SESSÃO (2026-11-04)
+## ✅ COMPLETADO NESTA SESSÃO (2026-11-06)
 
-### Repo Público Criado
-- **GitHub**: https://github.com/LiruhM/pet-bolha
-- **Commit inicial**: `be24a49` — "feat: initial commit - Pet Bolha core + Windows overlay + assets"
+### 1. Build Android Real — CONCLUÍDO
+- **pet-core** compilado para `aarch64-linux-android` (arm64-v8a) + `armv7-linux-androideabi` (armeabi-v7a)
+- `.so` copiados para `pet-android/src/main/jniLibs/`:
+  - `arm64-v8a/libpet_core.so` (1.2 MB)
+  - `armeabi-v7a/libpet_core.so` (879 KB)
+- **Sprites** copiados para `pet-android/src/main/res/drawable-nodpi/`:
+  - `bolha.png`, `bryan.png`, `jorge.png`
 
-### Arquitetura Implementada
+### 2. pet-windows + TTS — CONCLUÍDO
+- Overlay Windows nativo funcional (transparente, click-through, 5 FPS)
+- 32 frames extraídos do sprite sheet (8×4 grid)
+- Piper TTS integrado (modelo `pt_BR-faber-medium`, offline PT-BR)
+- Hotkey pânico `Ctrl+Alt+Shift+P`
 
-#### pet-core (Rust library)
-| Módulo | Linhas | Descrição |
-|--------|--------|-----------|
-| `state.rs` | ~400 | State machine: 4 necessidades (fome/sono/tédio/carinho), 10 humores, ações |
-| `neural.rs` | ~500 | LIF Neural Network: 470 neurônios, STDP, thread-safe (Arc<RwLock>) |
-| `memory.rs` | ~300 | JSONL append-only store com tags, daily summary, export |
-| `speech.rs` | ~600 | 500+ templates PT-BR, seleção por peso humor+contexto+cooldown |
-| `personality.rs` | ~300 | 3 personalidades (Bryan/Jorge/Balanced) + config visual/comportamento |
-| `ffi.rs` | ~300 | C FFI exports (create/destroy/tick/interact/get_state/get_speech) |
+### 3. pet-core — OK
+- Neural LIF 470 neurônios, memory JSONL, speech 500+ templates
+- 3 personalidades (Bryan/Jorge/Balanced)
+- FFI C para Windows/Android
 
-#### pet-windows (Windows overlay nativo)
-- **Janela**: `WS_EX_TRANSPARENT | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW` (SEM WS_EX_LAYERED = 0 custo DWM)
-- **Render**: tiny-skia CPU, event-driven (5 FPS acordado, 1 frame/2s idle, 0% CPU dormindo)
-- **Input**: WM_MOUSEMOVE (hover=carinho), WM_LBUTTONDOWN (brincar), WM_RBUTTONDOWN (carinho)
-- **Hotkey pânico**: `Ctrl+Alt+Shift+P` desliga tudo instantaneamente
-- **Sprite rendering**: 64x64 frames, 1.5x scale, animações por estado
-
-### Assets Gerados
-| Asset | Descrição |
-|-------|-----------|
-| `bolha.png` | Sprite sheet 512x256 (32 frames, 8 animações) + `bolha_frames.json` |
-| `bryan.png` | Sprite sheet personalidade revoltada + frames map |
-| `jorge.png` | Sprite sheet coach satírico + frames map |
-| `generate_sprites.py` | Script Python para regenerar |
-
-### Documentação
-- `README.md` — Arquitetura completa, build instructions, roadmap, status "EM CONSTRUÇÃO"
-- Repo público com issues/discussions habilitados
-
----
-
-## ✅ COMPLETADO HOJE (2026-11-05)
-
-### pet-core — Compilação e Testes Verificados
-- **cargo check --workspace**: ✅ Compila sem erros (apenas warnings de documentação)
-- **cargo build --release -p pet-core**: ✅ Build release bem-sucedido (~45s)
-- **cargo test -p pet-core**: ✅ 1 teste passou (memory::tests::test_memory_store)
-- **Assets copiados** para `target/release/assets/sprites/`
-
-### pet-android — Estrutura Completa Criada
-- **Gradle build** (`pet-android/build.gradle.kts`) com Kotlin 2.0, minSdk 24, targetSdk 34
-- **AndroidManifest.xml** com permissões overlay, foreground service, boot receiver, sensores
-- **JNI Bindings** (`PetNative.kt`) — mapeamento 1:1 das funções FFI do pet-core
-- **PetOverlayService.kt** — Service de overlay com:
-  - WindowManager TYPE_APPLICATION_OVERLAY (click-through, não foca)
-  - Touch handling: tap=carinho, drag=mover, long press=brincar
-  - SensorManager: acelerômetro → cursor position, proximidade → carinho
-  - Tick loop 10Hz via coroutines (pet_tick + pet_get_state + pet_get_speech)
-  - Wake lock PARTIAL_WAKE_LOCK para manter vivo
-  - Foreground service com notificação persistente
-  - Binder para MainActivity comunicar
-- **BootReceiver.kt** — Auto-start no boot/quickboot
-- **MainActivity.kt** + **activity_main.xml** — Config UI:
-  - Nome do pet, seleção personalidade (Balanced/Bryan/Jorge)
-  - Toggles: fala automática, rede neural
-  - Botões: alimentar, dormir, ver estado JSON, salvar config
-- **CMakeLists.txt** + **pet_jni.cpp** + **pet_core.h** — Wrapper C++ para JNI
-- **build_android.sh** — Script para compilar pet-core via cargo + NDK (arm64-v8a, armeabi-v7a)
-- **pet-android/Cargo.toml** + **src/lib.rs** — Placeholder no workspace Cargo
-
-### Correções Aplicadas no pet-core
-- Adicionado `rand_chacha`, `directories` ao Cargo.toml
-- Habilitado feature `serde` no `nalgebra` para serialização de matrizes
-- Corrigido macro `add_template!` em `speech.rs` → função `add_template`
-- Adicionado `Copy` ao `Temperament` e `PartialEq` ao `SleepEventKind`
-- Tornado campos de `PetStats` públicos
-- Corrigido imports de `chrono::Timelike` onde necessário
-- Corrigido métodos `rng.gen_range()` / `rng.gen()` (rand 0.8 API)
-- Adicionado módulo `matrix_serde` para serialização de `DMatrix<f32>`
-- Ajustado imports não-utilizados em `neural.rs`, `speech.rs`, `ffi.rs`
-
----
-
-## ⚠️ PET-WINDOWS — BLOQUEADO
-- **Erro**: API do crate `windows` 0.58 mudou (breaking changes em HWND, HBITMAP, GDI functions)
-- **Decisão**: Deixar para depois — foco no Android que é prioridade alta no roadmap
-- **Workaround futuro**: Downgrade `windows` crate ou migrar para API nova
-
----
-
-## 📁 ESTRUTURA NO DISCO
+### Build Android pronto para testar no POCO:
+```bash
+# No Android Studio:
+# 1. Open pet-bolha/pet-android
+# 2. Build → Run
+# 3. Conceder permissão "Desenhar sobre outros apps"
+# 4. Verificar: touch, acelerômetro, proximidade, animações
+```
 
 ```
 Hermes_Brain/10-Projetos/pet-bolha/

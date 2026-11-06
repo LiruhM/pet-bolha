@@ -1,0 +1,15 @@
+[package]
+name = "pet-tts"
+version = "0.1.0"
+edition = "2021"
+description = "Piper TTS integration for Pet Bolha"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.0", features = ["process", "fs", "macros", "sync", "rt"] }
+tracing = "0.1"
+which = "4.0"
+dirs = "5.0"
+parking_lot = "0.12"

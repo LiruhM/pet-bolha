@@ -8,6 +8,7 @@ repository = "https://github.com/matheus/pet-bolha"
 
 [dependencies]
 pet-core = { path = "../pet-core" }
+pet-tts = { path = "../pet-tts" }
 tiny-skia = { workspace = true }
 windows = { workspace = true }
 anyhow = { workspace = true }
@@ -20,3 +21,4 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 image = "0.24"
 bytemuck = "1.0"
+tokio = { version = "1.0", features = ["process", "fs", "macros"] }
